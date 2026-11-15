@@ -14,6 +14,16 @@ def dfunc(x0: float) -> float:
     dy = 4*x0-4*(x0**3)-1/x0
     return dy
 
+def ddfunc(x0: float) -> float:
+    ddy = 4 - 12 * (x0 ** 2) + 1 / (x0 ** 2)
+    return ddy
+
+def check(func: Callable[[float], float], ddfunc: Callable[[float], float], x0: float):
+    if x0 > 0 and func(x0)*ddfunc(x0) > 0:
+        return True
+    else:
+        return False
+
 def solve_newton(func: Callable[[float], float], 
 dfunc: Callable[[float], float], x0: float):
     eps = 0.00008
@@ -42,14 +52,17 @@ def save_results(root: float, history, filename = "result_variant_06.txt"):
         file.write("Таблиця з результатами обчислень:\n")
         file.write(f"{'Номер ітерації':<15} | {'Значення ітерації':>11}\n") 
         for step, x_next in history:
-            file.write(f"{      step:<15} | {x_next:>11.6f}\n")
+            file.write(f"{step:<15} | {x_next:>11.6f}\n")
 
 def main():
     x0=float(input("Введіть х0, яке задовольняє умову f(x0)∙f''(x0) > 0:   "))
-    root, history = solve_newton(func, dfunc, x0)
-    save_results(root, history)
-    print(f"Корінь рівняння дорівнює {root:.6f}, який був знайднений за  таку кількість ітерацій: {len(history)} ")
-
+    if check(func, ddfunc, x0):
+        root, history = solve_newton(func, dfunc, x0)
+        save_results(root, history)
+        print(f"Корінь рівняння дорівнює {root:.6f}, який був знайднений за  таку кількість ітерацій: {len(history)} ")
+    else:
+        print("Введене число не задовольняє необхідної умови")
+    
 if __name__ == "__main__":
     main()
 
